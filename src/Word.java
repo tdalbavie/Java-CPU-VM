@@ -153,7 +153,7 @@ public class Word
         {
             if (BitArray[i].getValue())
             {
-                value += 1L << (31 - i);
+                value += Math.pow(2, 31 - i);
             }
         }
         return value;
@@ -164,17 +164,34 @@ public class Word
     {
         // Check if the number is negative (MSB is 1)
         boolean isNegative = BitArray[0].getValue();
-
         int value = 0;
-        for (int i = 0; i < BitArray.length; i++) {
-            if (BitArray[i].getValue()) {
-                value += 1 << (31 - i);
+
+        if (isNegative == false)
+        {
+            for (int i = 0; i < BitArray.length; i++)
+            {
+                if (BitArray[i].getValue())
+                {
+                    value += Math.pow(2, 31 - i);
+                }
             }
         }
 
+        else
+        {
+
+        }
         // If the number is negative, convert from two's complement
-        if (isNegative) {
-            value = -(~value + 1);
+        if (isNegative)
+        {
+            for (int i = 0; i < BitArray.length; i++)
+            {
+                if (BitArray[i].getValue() == false)
+                {
+                    value += Math.pow(2, 31 - i);
+                }
+            }
+            value = -(value + 1);
         }
 
         return value;
