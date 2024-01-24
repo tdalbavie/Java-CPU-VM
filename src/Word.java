@@ -229,17 +229,17 @@ public class Word
         for (int i = 0; i < BitArray.length; i++)
             BitArray[i] = new Bit(false);
 
-        int index = 31;
-        while (value != 0 && index >= 0)
+        for (int i = 31; i >= 0; i--)
         {
-            // Checks the remainder and inserts the bit starting from the right.
-            if (value % 2 == 1)
-                BitArray[index--] = new Bit(true);
+            if (value != 0)
+            {
+                BitArray[i] = new Bit(value % 2 == 1);
+                value = value / 2;
+            }
             else
-                BitArray[index--] = new Bit(false);
-
-            // Halves the number to get the next bit value.
-            value = value / 2;
+            {
+                BitArray[i] = new Bit(false);
+            }
         }
 
         // Applies the two's compliment to convert to a negative binary value.
@@ -256,7 +256,7 @@ public class Word
         for (int i = 0; i < BitArray.length; i++)
         {
             // Inverts each bit value.
-            BitArray[i].set(!BitArray[i].getValue());
+            BitArray[i].set(BitArray[i].getValue() == false);
         }
     }
 
