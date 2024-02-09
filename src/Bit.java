@@ -52,7 +52,10 @@ public class Bit
     public Bit and(Bit other)
     {
         if (value == other.getValue())
-            return new Bit(true);
+            if (value == true)
+                return new Bit(true);
+            else
+                return new Bit(false);
         else
             return new Bit(false);
     }

@@ -74,9 +74,9 @@ public class UnitTest1
 
         Word andTestWord = testWord.and(otherTestWord);
 
-        // First two on right side will be set to false as 5 = 101 and 6 = 110
+        // Only third to the right is set to true as 5 = 101 and 6 = 110
         Assert.assertEquals(andTestWord.toString(),
-                "t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,f,f");
+                "f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f");
     }
 
     // Tests or operation in Word (Bit operation is being tested through Word)

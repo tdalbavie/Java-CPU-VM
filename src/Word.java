@@ -275,4 +275,9 @@ public class Word
             BitArray[i].set(false);
         }
     }
+
+    public Bit[] getBitArray()
+    {
+        return BitArray;
+    }
 }
