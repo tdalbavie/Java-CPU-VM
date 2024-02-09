@@ -4,6 +4,7 @@ public class ALU
     Word op2;
     Word result;
 
+    // Constructor for ALU.
     public ALU()
     {
         this.op1 = new Word();
@@ -23,61 +24,104 @@ public class ALU
             throw new IllegalArgumentException("Operation code must be 4 bits.");
         }
 
-        // Gets each bit for ease of use.
-        boolean bit0 = operation[0].getValue();
-        boolean bit1 = operation[1].getValue();
-        boolean bit2 = operation[2].getValue();
-        boolean bit3 = operation[3].getValue();
-
         // Decision tree to determine the operation.
-        // AND: 1000
-        if (bit0 && !bit1 && !bit2 && !bit3)
+        // Checks if first bit is 1.
+        if (operation[0].getValue() == true)
         {
-            result = op1.and(op2);
+            // Checks if second bit is 0.
+            if (operation[1].getValue() == false)
+            {
+                // Checks if third bit is 0.
+                if (operation[2].getValue() == false)
+                {
+                    // Checks if fourth bit is 0.
+                    // AND: 1000
+                    if (operation[3].getValue() == false)
+                    {
+                        result = op1.and(op2);
+                    }
+                    // Fourth bit is 1.
+                    // OR: 1001
+                    else
+                    {
+                        result = op1.or(op2);
+                    }
+                }
+                // Third bit is 1.
+                else
+                {
+                    // Checks if fourth bit is 0.
+                    // XOR: 1010
+                    if (operation[3].getValue() == false)
+                    {
+                        result = op1.xor(op2);
+                    }
+                    // Fourth bit is 1.
+                    // NOT: 1011
+                    else
+                    {
+                        result = op1.not();
+                    }
+                }
+            }
+            // Second bit is 1.
+            else
+            {
+                // Checks if third bit is 0.
+                if (operation[2].getValue() == false)
+                {
+                    // Checks if fourth bit is 0.
+                    // LEFT SHIFT: 1100
+                    if (operation[3].getValue() == false)
+                    {
+                        shiftAmount = calculateShiftAmount(op2);
+                        result = op1.leftShift(shiftAmount);
+                    }
+                    // Fourth bit is 1.
+                    // RIGHT SHIFT: 1101
+                    else
+                    {
+                        shiftAmount = calculateShiftAmount(op2);
+                        result = op1.rightShift(shiftAmount);
+                    }
+                }
+                // Third bit is 1.
+                else
+                {
+                    // Checks if fourth bit is 0.
+                    // ADD: 1110
+                    if (operation[3].getValue() == false)
+                    {
+                        result = add(op1, op2);
+                    }
+                    // Fourth bit is 1.
+                    // SUBTRACT: 1111
+                    else
+                    {
+                        result = subtract(op1, op2);
+                    }
+                }
+            }
         }
-        // OR: 1001
-        else if (bit0 && !bit1 && !bit2 && bit3)
+        // First bit is 0.
+        else if (operation[0].getValue() == false)
         {
-            result = op1.or(op2);
+            // Checks if second bit is 1.
+            if (operation[1].getValue() == true)
+            {
+                // Checks if third bit is 1.
+                if (operation[2].getValue() == true)
+                {
+                    // Checks if fourth bit is 1.
+                    // MULTIPLY: 0111
+                    if (operation[3].getValue() == true)
+                    {
+                        result = multiply(op1, op2);
+                    }
+                }
+            }
         }
-        // XOR: 1010
-        else if (bit0 && !bit1 && bit2 && !bit3)
-        {
-            result = op1.xor(op2);
-        }
-        // NOT: 1011
-        else if (bit0 && !bit1 && bit2 && bit3)
-        {
-            result = op1.not();
-        }
-        // LEFT SHIFT: 1100
-        else if (bit0 && bit1 && !bit2 && !bit3)
-        {
-            shiftAmount = calculateShiftAmount(op2);
-            result = op1.leftShift(shiftAmount);
-        }
-        // RIGHT SHIFT: 1101
-        else if (bit0 && bit1 && !bit2 && bit3)
-        {
-            shiftAmount = calculateShiftAmount(op2);
-            result = op1.rightShift(shiftAmount);
-        }
-        // ADD: 1110
-        else if (bit0 && bit1 && bit2 && !bit3)
-        {
-            result = add(op1, op2);
-        }
-        // SUBTRACT: 1111
-        else if (bit0 && bit1 && bit2 && bit3)
-        {
-            result = subtract(op1, op2);
-        }
-        // MULTIPLY: 0111
-        else if (!bit0 && bit1 && bit2 && bit3)
-        {
-            result = multiply(op1, op2);
-        }
-        // Throws in the case of invalid code.
+        // If code does not exist.
         else
         {
             throw new IllegalArgumentException("Invalid operation code provided.");
@@ -151,7 +195,7 @@ public class ALU
         return new Bit[] {sum, carryOut};
     }
 
-    // Adds four bits with carry in, extends add2 logic.
+    // Adds four bits with carry in extending add2.
     public Bit[] add4(Bit a, Bit b, Bit c, Bit d, Bit carryIn)
     {
         // Gets first add2 result.
