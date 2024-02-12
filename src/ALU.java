@@ -198,14 +198,26 @@ public class ALU
     // Adds four bits with carry in extending add2.
     public Bit[] add4(Bit a, Bit b, Bit c, Bit d, Bit carryIn)
     {
-        // Gets first add2 result.
-        Bit[] result1 = add2(a, b, carryIn);
-        // Gets second add2 result.
-        Bit[] result2 = add2(c, d, result1[1]);
-        // Gets a final result using previous two results.
-        Bit[] finalResult = add2(result1[0], result2[0], new Bit(false));
-        // Checking for a carry.
-        Bit finalCarry = result1[1].or(result2[1]).or(finalResult[1]);
-        return new Bit[] {finalResult[0], finalCarry};
+        // Calculates intermediate sums.
+        Bit abSum = a.xor(b);
+        Bit cdSum = c.xor(d);
+
+        // Calculates intermediate carries.
+        Bit abCarry = a.and(b);
+        Bit cdCarry = c.and(d);
+
+        // Calculates final sum considering the carryIn.
+        Bit sumWithoutCarryIn = abSum.xor(cdSum);
+        Bit finalSum = sumWithoutCarryIn.xor(carryIn);
+
+        // Calculates carries that need to be propagated to the final carry.
+        Bit carryFromABtoCD = abSum.and(cdSum);
+        Bit carryFromCDtoFinal = cdSum.and(carryIn);
+        Bit carryFromABtoFinal = abSum.and(carryIn);
+
+        // Calculates final carry.
+        Bit finalCarry = abCarry.or(cdCarry).or(carryFromABtoCD).or(carryFromCDtoFinal).or(carryFromABtoFinal);
+
+        return new Bit[] {finalSum, finalCarry};
     }
 }

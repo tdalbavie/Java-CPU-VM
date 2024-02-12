@@ -162,7 +162,7 @@ public class UnitTest2
         Bit carryIn = new Bit(false);
         Bit[] result = alu.add4(a, b, c, d, carryIn);
         // Expect sum = 0.
-        Assert.assertTrue(result[0].getValue());
+        Assert.assertFalse(result[0].getValue());
         // Expect carry = 1.
         Assert.assertTrue(result[1].getValue());
     }
