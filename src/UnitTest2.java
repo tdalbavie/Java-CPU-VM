@@ -108,62 +108,78 @@ public class UnitTest2
     }
 
     @Test
-    public void add2NoCarryTest()
+    public void add2Test()
     {
-        // Adds 0, 1.
-        Bit a = new Bit(false);
-        Bit b = new Bit(true);
-        Bit carryIn = new Bit(false);
-        Bit[] result = alu.add2(a, b, carryIn);
-        // Expect sum = 1.
-        Assert.assertTrue(result[0].getValue());
-        // Expect carry = 0.
-        Assert.assertFalse(result[1].getValue());
+        Word a = new Word();
+        Word b = new Word();
+
+        // Sets the new words.
+        a.set(1);
+        b.set(2);
+
+        // Passes in values to make calculation.
+        Word result = alu.add2(a, b);
+        // Checks result correctness.
+        Assert.assertEquals(3, result.getSigned());
     }
 
     @Test
     public void add2WithCarryTest()
     {
-        // Adds 1, 1.
-        Bit a = new Bit(true);
-        Bit b = new Bit(true);
-        Bit carryIn = new Bit(false);
-        Bit[] result = alu.add2(a, b, carryIn);
-        // Expect sum = 0.
-        Assert.assertFalse(result[0].getValue());
-        // Expect carry = 1.
-        Assert.assertTrue(result[1].getValue());
+        Word a = new Word();
+        Word b = new Word();
+
+        // Sets to max int value to cause an overflow.
+        a.set(Integer.MAX_VALUE);
+        // Set to 1 to cause an overflow.
+        b.set(1);
+
+        // Passes in values to make calculation.
+        Word result = alu.add2(a, b);
+        // Result should be -2^31 due to overflow.
+        Assert.assertEquals(Integer.MIN_VALUE, result.getSigned());
     }
 
     @Test
-    public void add4NoFinalCarryTest()
+    public void add4Test()
     {
-        // Adds 1, 0, 1, 0.
-        Bit a = new Bit(true);
-        Bit b = new Bit(false);
-        Bit c = new Bit(true);
-        Bit d = new Bit(false);
-        Bit carryIn = new Bit(false);
-        Bit[] result = alu.add4(a, b, c, d, carryIn);
-        // Expect sum = 0.
-        Assert.assertFalse(result[0].getValue());
-        // Expect carry = 1.
-        Assert.assertTrue(result[1].getValue());
+        Word a = new Word();
+        Word b = new Word();
+        Word c = new Word();
+        Word d = new Word();
+
+        // Sets the new words.
+        a.set(1);
+        b.set(2);
+        c.set(3);
+        d.set(4);
+
+        // Passes in values to make calculation.
+        Word result = alu.add4(a, b, c, d);
+        // Checks result correctness.
+        Assert.assertEquals(10, result.getSigned());
     }
 
     @Test
-    public void add4WithFinalCarryTest()
+    public void add4WithCarryTest()
     {
-        // Adds 1, 1, 1, 1.
-        Bit a = new Bit(true);
-        Bit b = new Bit(true);
-        Bit c = new Bit(true);
-        Bit d = new Bit(true);
-        Bit carryIn = new Bit(false);
-        Bit[] result = alu.add4(a, b, c, d, carryIn);
-        // Expect sum = 0.
-        Assert.assertFalse(result[0].getValue());
-        // Expect carry = 1.
-        Assert.assertTrue(result[1].getValue());
+        Word a = new Word();
+        Word b = new Word();
+        Word c = new Word();
+        Word d = new Word();
+
+        // Sets the new words.
+        a.set(Integer.MAX_VALUE);
+        b.set(1);
+        c.set(1);
+        d.set(1);
+
+        // Passes in values to make calculation.
+        Word result = alu.add4(a, b, c, d);
+
+        // Gets expected value by getting max int value and adding 1 to signify a carry.
+        long expectedResult = (long) Integer.MAX_VALUE + 1;
+        // Checks result correctness.
+        Assert.assertEquals(expectedResult, result.getUnsigned());
     }
 }

@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class ALU
 {
     Word op1;
@@ -146,78 +149,166 @@ public class ALU
     // Adds using add2.
     private Word add(Word a, Word b)
     {
-        Word sum = new Word();
-        Bit carry = new Bit(false);
-        // Gets the sum for all bits in both words.
-        for (int i = 31; i >= 0; i--)
-        {
-            Bit[] result = add2(a.getBit(i), b.getBit(i), carry);
-            sum.setBit(i, result[0]);
-            carry = result[1];
-        }
-        // Returns the resulting word.
-        return sum;
+        // Directly use add2 for adding two Word objects
+        return add2(a, b);
     }
+
 
     // Subtracts using add and not.
     private Word subtract(Word a, Word b)
     {
-        // Negate b using not.
-        Word negatedB = b.not();
-        Word one = new Word();
-        // Sets the least significant bit to 1.
-        one.setBit(31, new Bit(true));
-        // Returns the value after adding a positive and negative.
-        return add(a, add(negatedB, one));
+        // Calculates the two's complement of b.
+        Word twoComplementOfB = twosComplement(b);
+
+        // Add a (minuend) and the two's complement of b
+        return add2(a, twoComplementOfB);
+    }
+
+    // A helper method to perform the twos compliment for subtraction.
+    private Word twosComplement(Word word)
+    {
+        Word complement = new Word();
+        // Start with a carry of 1 for the addition of 1 in two's complement
+        Bit carry = new Bit(true);
+
+        // First, invert all bits
+        for (int i = 31; i >= 0; i--) {
+            Bit invertedBit = word.getBit(i).not();
+            // Add inverted bit and carry
+            Bit sum = invertedBit.xor(carry);
+            carry = invertedBit.and(carry);
+            complement.setBit(i, sum);
+        }
+
+        return complement;
     }
 
     // Multiplies using shift and add.
-    private Word multiply(Word a, Word b)
-    {
-        Word product = new Word();
+    private Word multiply(Word multiplicand, Word multiplier) {
+        List<Word> partialProducts = new ArrayList<>();
+
+        // Generates partial products bit by bit.
         for (int i = 31; i >= 0; i--)
         {
-            if (b.getBit(i).getValue() == true)
+            if (multiplier.getBit(i).getValue())
             {
-                // Checks if bit is 1, then add a shifted left by (31 - i) positions.
-                product = add(product, a.leftShift(31 - i));
+                partialProducts.add(multiplicand.leftShift(31 - i));
+            }
+
+            // Creates a new word when multiplying 0, does not affect multiplication.
+            else
+            {
+                partialProducts.add(new Word());
             }
         }
-        return product;
+
+        // Processes the partial products in rounds.
+        List<Word> currentRoundResults = partialProducts;
+        while (currentRoundResults.size() > 1)
+        {
+            // Secondary list to hold results.
+            List<Word> nextRoundResults = new ArrayList<>();
+
+            // Starts with groups of 4 words (a set of 32 words then a set of 8 words).
+            for (int i = 0; i < currentRoundResults.size(); i += 4)
+            {
+                Word sum = new Word();
+
+                // Checks to see if there are enough words to call add4 on.
+                if (currentRoundResults.size() - i >= 4)
+                {
+                    sum = add4(currentRoundResults.get(i),
+                            currentRoundResults.get(i + 1),
+                            currentRoundResults.get(i + 2),
+                            currentRoundResults.get(i + 3));
+                }
+
+                // Takes the remaining words and calls add2 to get final result.
+                else
+                {
+                    // Handles remaining operands with add2.
+                    for (int j = i; j < currentRoundResults.size(); j++)
+                    {
+                        sum = add2(sum, currentRoundResults.get(j));
+                    }
+                }
+
+                // Adds result to new arrayList for next round.
+                nextRoundResults.add(sum);
+            }
+
+            // Sets the resultant words as the next set of words to process.
+            currentRoundResults = nextRoundResults;
+        }
+
+        // Returns the final result using the only remaining word left.
+        return currentRoundResults.get(0);
     }
 
+
     // Adds two bits with carry in.
-    public Bit[] add2(Bit a, Bit b, Bit carryIn)
+    public Word add2(Word a, Word b)
     {
-        // Uses provided formula to add.
-        Bit sum = a.xor(b).xor(carryIn);
-        Bit carryOut = a.and(b).or(a.xor(b).and(carryIn));
-        return new Bit[] {sum, carryOut};
+        Word sum = new Word();
+        Bit carry = new Bit(false);
+        for (int i = 31; i >= 0; i--)
+        {
+            Bit aBit = a.getBit(i);
+            Bit bBit = b.getBit(i);
+
+            Bit sumBit = aBit.xor(bBit).xor(carry);
+            carry = aBit.and(bBit).or(aBit.xor(bBit).and(carry));
+
+            sum.setBit(i, sumBit);
+        }
+        return sum;
     }
 
     // Adds four bits with carry in extending add2.
-    public Bit[] add4(Bit a, Bit b, Bit c, Bit d, Bit carryIn)
+    public Word add4(Word a, Word b, Word c, Word d)
     {
-        // Calculates intermediate sums.
-        Bit abSum = a.xor(b);
-        Bit cdSum = c.xor(d);
+        Word sum = new Word();
+        Bit carry = new Bit(false);
 
-        // Calculates intermediate carries.
-        Bit abCarry = a.and(b);
-        Bit cdCarry = c.and(d);
+        for (int i = 31; i >= 0; i--)
+        {
+            // Get bits from each word at position i
+            Bit bitA = a.getBit(i);
+            Bit bitB = b.getBit(i);
+            Bit bitC = c.getBit(i);
+            Bit bitD = d.getBit(i);
 
-        // Calculates final sum considering the carryIn.
-        Bit sumWithoutCarryIn = abSum.xor(cdSum);
-        Bit finalSum = sumWithoutCarryIn.xor(carryIn);
+            // Calculate the sum and carry for these four bits and the current carry
+            Bit[] sumAndCarry = addFourBitsAndCarry(bitA, bitB, bitC, bitD, carry);
 
-        // Calculates carries that need to be propagated to the final carry.
-        Bit carryFromABtoCD = abSum.and(cdSum);
-        Bit carryFromCDtoFinal = cdSum.and(carryIn);
-        Bit carryFromABtoFinal = abSum.and(carryIn);
+            // Set the resulting bit in the result word
+            sum.setBit(i, sumAndCarry[0]);
+
+            // Update the carry for the next iteration
+            carry = sumAndCarry[1];
+        }
+
+        return sum;
+    }
+
+    // Helper method to add4 to add together 4 bits along with the carry.
+    private Bit[] addFourBitsAndCarry(Bit a, Bit b, Bit c, Bit d, Bit carryIn)
+    {
+        // Calculates individual sums and intermediate carries.
+        Bit sumAB = a.xor(b);
+        Bit carryAB = a.and(b);
+
+        Bit sumCD = c.xor(d);
+        Bit carryCD = c.and(d);
+
+        // Takes results then does similar operation like in add2.
+        Bit sumABCD = sumAB.xor(sumCD).xor(carryIn);
+        Bit carryABCD = sumAB.and(sumCD).or(carryIn.and(sumAB.xor(sumCD)));
 
         // Calculates final carry.
-        Bit finalCarry = abCarry.or(cdCarry).or(carryFromABtoCD).or(carryFromCDtoFinal).or(carryFromABtoFinal);
+        Bit finalCarry = carryAB.or(carryCD).or(carryABCD);
 
-        return new Bit[] {finalSum, finalCarry};
+        // Returns the sum and final carry.
+        return new Bit[]{sumABCD, finalCarry};
     }
 }
