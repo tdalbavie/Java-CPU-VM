@@ -11,6 +11,14 @@ public class Word
             BitArray[i] = new Bit();
     }
 
+    // Simple constructor used to create deep copy of a word to read from memory.
+    public Word(Word wordToRead)
+    {
+        BitArray = new Bit[32];
+        // Makes a copy of the array from the word that is going to be read.
+        System.arraycopy(wordToRead.getBitArray(), 0, BitArray, 0, BitArray.length);
+    }
+
     // Get a new Bit that has the same value as bit i.
     public Bit getBit(int i)
     {
@@ -273,6 +281,25 @@ public class Word
             }
 
             BitArray[i].set(false);
+        }
+    }
+
+    // Used to increment the word by 1.
+    public void increment()
+    {
+        // Starts with a carry to add 1.
+        Bit carry = new Bit(true);
+
+        // Loops through the array of bits to increment the word.
+        for (int i = 31; i >= 0 && carry.getValue(); i--)
+        {
+            Bit currentBit = BitArray[i];
+            // XOR the current bit with carry to get the next bit.
+            Bit nextBit = currentBit.xor(carry);
+            // AND the current bit with carry to determine the next carry.
+            carry = currentBit.and(carry);
+            // Sets the next bit as the current bit.
+            BitArray[i] = nextBit;
         }
     }
 
