@@ -1,52 +1,1 @@
-public class Processor
-{
-    // Program Counter.
-    private Word PC = new Word();
-    // Stack Pointer.
-    private Word SP = new Word();
-    // Indicator for if the processor is halted.
-    private Bit halted = new Bit(false);
-    private Word currentInstruction = new Word();
-
-    public Processor()
-    {
-        // Sets the beginning of memory (Starts at address 0).
-        PC.set(0);
-        // Sets the end of memory (Ends at address 1023 or the end of the 1024-word memory).
-        SP.set(1023);
-    }
-
-    public void run()
-    {
-        while (!halted.getValue())
-        {
-            fetch();
-            decode();
-            execute();
-            store();
-        }
-    }
-
-    private void fetch()
-    {
-        // Fetches instruction from memory.
-        currentInstruction.copy(MainMemory.read(PC));
-        // Increments PC to point to the next instruction.
-        PC.increment();
-    }
-
-    private void decode()
-    {
-
-    }
-
-    private void execute()
-    {
-
-    }
-
-    private void store()
-    {
-
-    }
-}
+public class Processor{    // Program Counter.    private Word PC = new Word();    // Stack Pointer.    private Word SP = new Word();    // Indicator for if the processor is halted.    private Bit halted = new Bit(false);    private Word currentInstruction = new Word();    // 31 registers plus 1 for the zero register.    private Word[] registers = new Word[32];    private Word rd, rs1, rs2, immediate, function;    private ALU alu = new ALU();    private int rdIndex = -1;    public Processor()    {        // Initializes other registers.        for (int i = 0; i < registers.length; i++)        {            registers[i] = new Word();            // Checks for register R0 and sets it to always be 0.            if (i == 0)            {                registers[i].set(0);            }        }        // Sets the beginning of memory (Starts at address 0).        PC.set(0);        // Sets the end of memory (Ends at address 1023 or the end of the 1024-word memory).        SP.set(1023);    }    public void run()    {        while (!halted.getValue())        {            fetch();            decode();            execute();            store();        }    }    private void fetch()    {        // Fetches instruction from memory.        currentInstruction.copy(MainMemory.read(PC));        // Increments PC to point to the next instruction.        PC.increment();    }    private void decode()    {        Word opcode = extractBits(currentInstruction, 27, 31);        // Resets or initialize words for storing extracted values.        rs1 = new Word();        rs2 = new Word();        rd = new Word();        immediate = new Word();        function = new Word();        rdIndex = -1;        // Extracts format from opcode (last 2 bits of opcode).        int format = (int)opcode.getUnsigned() & 0x3;        // Checks which instruction is acquired from the opcode.        switch (format)        {            case 0: // No R (0R).                immediate = extractBits(currentInstruction, 0, 26);                break;            case 1: // Dest Only (1R).                immediate = extractBits(currentInstruction, 0, 17);                function = extractBits(currentInstruction, 18, 21);                rd = extractBits(currentInstruction, 22, 26);                rdIndex = (int)extractBits(currentInstruction, 22, 26).getUnsigned();                break;            case 2: // 2 Register (2R).                immediate = extractBits(currentInstruction, 0, 12);                rs1 = extractBits(currentInstruction, 13, 17);                function = extractBits(currentInstruction, 18, 21);                rd = extractBits(currentInstruction, 22, 26);                rdIndex = (int)extractBits(currentInstruction, 22, 26).getUnsigned();                break;            case 3: // 3 Register (3R).                immediate = extractBits(currentInstruction, 0, 7);                rs1 = extractBits(currentInstruction, 8, 12);                rs2 = extractBits(currentInstruction, 13, 17);                function = extractBits(currentInstruction, 18, 21);                rd = extractBits(currentInstruction, 22, 26);                rdIndex = (int)extractBits(currentInstruction, 22, 26).getUnsigned();                break;            default:                throw new IllegalArgumentException("Invalid instruction format detected.");        }    }    // Helper method for decode to extract a subset of bits from an instruction for register representation.    private Word extractBits(Word instruction, int startBit, int endBit) {        Word result = new Word();        for (int i = endBit, j = 31; i >= startBit; i--, j--)        {            Bit bit = instruction.getBit(i);            result.setBit(j, bit);        }        return result;    }    private void execute()    {        // Extracts the opcode.        int opcode = (int) currentInstruction.getUnsigned() >> 27;        // Checks for the halt condition (00000) and halts if true.        if (opcode == 0)        {            halted.set(true);            return;        }        // Checks if it is a math operation (opcode starts with 000).        if ((opcode & 0x18) == 0)        {            // Prepares the function bits for the ALU operation.            Bit[] functionBits = new Bit[4];            for (int i = 0; i < 4; i++)            {                functionBits[i] = currentInstruction.getBit(27 + i);            }            // Sets OP1 and OP2 for the ALU.            if (rs1 != null) alu.op1.copy(rs1);            if (rs2 != null) alu.op2.copy(rs2);            // Executes the operation in the ALU.            alu.doOperation(functionBits);            // Retrieves the result from the ALU and store it accordingly.            if (rd != null)                rd.copy(alu.result);        }    }    private void store()    {        if (rdIndex > 0)        {            registers[rdIndex].copy(alu.result);        }    }    // A simple test method to get a register to check the value.    public Word getRegisterValue(int index)    {        if (index < 0 || index >= registers.length)        {            throw new IllegalArgumentException("Register index out of bounds");        }        return new Word(registers[index]);    }}
