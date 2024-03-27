@@ -30,6 +30,13 @@ public class UnitTest2
         // 1111 for SUBTRACT
         alu.doOperation(new Bit[]{new Bit(true), new Bit(true), new Bit(true), new Bit(true)});
         Assert.assertEquals(10, alu.result.getSigned());
+
+        // Does the following operation: 5 - 15 = -10
+        alu.op1.set(5);
+        alu.op2.set(15);
+        // 1111 for SUBTRACT
+        alu.doOperation(new Bit[]{new Bit(true), new Bit(true), new Bit(true), new Bit(true)});
+        Assert.assertEquals(-10, alu.result.getSigned());
     }
 
     @Test

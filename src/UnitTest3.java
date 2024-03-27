@@ -77,4 +77,24 @@ public class UnitTest3
 
         Assert.assertEquals(256, word.getUnsigned());
     }
+
+    @Test
+    public void testDecrement()
+    {
+        // Create new word to increment.
+        Word word = new Word();
+        // Initializes word to 0.
+        word.set(1);
+        // Increments the word to 1.
+        word.decrement();
+
+        Assert.assertEquals(0, word.getUnsigned());
+
+        // Sets word to bigger number that will cause a carry of bits.
+        word.set(255);
+        // Increments the word to 256.
+        word.decrement();
+
+        Assert.assertEquals(254, word.getUnsigned());
+    }
 }

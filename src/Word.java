@@ -303,6 +303,37 @@ public class Word
         }
     }
 
+    public void decrement()
+    {
+        // Borrow to use for subtracting 1.
+        Bit borrow = new Bit(true);
+
+        for (int i = 31; i >= 0; i--)
+        {
+            Bit currentBit = BitArray[i];
+            // If there's no borrow, no need to change the current bit.
+            if (!borrow.getValue())
+            {
+                // Exit loop early since no further changes will occur.
+                break;
+            }
+
+            // If the current bit is 1, subtracting 1 sets it to 0 with no borrow
+            if (currentBit.getValue())
+            {
+                BitArray[i].set(false);
+                // Borrow has happened and no longer needs to be used.
+                borrow.set(false);
+            }
+            // If the current bit is 0, subtracting 1 sets it to 1, and we still have a borrow.
+            else
+            {
+                BitArray[i].set(true);
+                // borrow remains true.
+            }
+        }
+    }
+
     public Bit[] getBitArray()
     {
         return BitArray;
