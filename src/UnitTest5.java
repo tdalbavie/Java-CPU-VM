@@ -163,8 +163,8 @@ public class UnitTest5
         // Tests false case (PC does not get set).
         processor = new Processor();
         MainMemory.load(new String[] {
-                "00000000000000011000000000100001", // MATH DestOnly 6, R1
-                "00000000000000011100000001000001", // MATH DestOnly 7, R2
+                "00000000000000011000000000100001", // MATH DestOnly 6 R1
+                "00000000000000011100000001000001", // MATH DestOnly 7 R2
                 "00000101000100000100100000000110", // BRANCH 3R R1 LE R2 5
                 "00000000000000000000000000000000" // HALT
         });
@@ -197,15 +197,16 @@ public class UnitTest5
     {
         Processor processor = new Processor();
         MainMemory.load(new String[] {
-                "00000000000000010100000000001001", // CALL 1R 5
+                "00000000000000000100000000100001", // MATH DestOnly 1 R1
+                "00000000000000010100000000101001", // CALL 1R 5
                 "00000000000000000000000000000000" // HALT
         });
         processor.run();
 
-        // PC will be 7 since PC = 2 (total instructions) + 5 (immediate value).
+        // PC will be 7 since PC = 2 (1 (R1 value) + 1 (Halt instruction)) + 5 (immediate value).
         Assert.assertEquals(7, processor.getPC().getUnsigned());
-        // Value of old PC is 1, PC gets incremented before it gets stored.
-        Assert.assertEquals(1, MainMemory.read(processor.getSP()).getUnsigned());
+        // Value of old PC is 2, PC gets incremented twice before it gets stored.
+        Assert.assertEquals(2, MainMemory.read(processor.getSP()).getUnsigned());
     }
 
     // Same as Branch, just checks if PC was stored in MainMemory.
@@ -250,28 +251,30 @@ public class UnitTest5
         MainMemory.load(new String[] {
                 "00000000000000011000000000100001", // MATH DestOnly 6 R1
                 "00000000000000011100000001000001", // MATH DestOnly 7 R2
-                "00000101000010001000100000001010", // CALL 3R R1 LE R2 5
+                "00000000000000010000000001100001", // MATH DestOnly 4 R3
+                "00001010000010001000100001101010", // CALL 3R R1 LE R2 10
                 "00000000000000000000000000000000" // HALT
         });
         processor.run();
 
-        // PC will be 9 since PC = 4 (total instructions) + 5 (immediate value).
-        Assert.assertEquals(9, processor.getPC().getUnsigned());
+        // PC will be 15 since PC = 5 (4 (R1 value) + 1 (Halt instruction)) + 10 (immediate value).
+        Assert.assertEquals(15, processor.getPC().getUnsigned());
         // Value of old PC is 3, PC gets incremented before it gets stored.
-        Assert.assertEquals(3, MainMemory.read(processor.getSP()).getUnsigned());
+        Assert.assertEquals(4, MainMemory.read(processor.getSP()).getUnsigned());
 
         // Tests false case (No change to PC so no need to check MainMemory as PC never gets stored).
         processor = new Processor();
         MainMemory.load(new String[] {
                 "00000000000000011000000000100001", // MATH DestOnly 6 R1
                 "00000000000000011100000001000001", // MATH DestOnly 7 R2
-                "00000101000100000100100000001010", // CALL 3R R1 LE R2 5
+                "00000000000000010000000001100001", // MATH DestOnly 4 R3
+                "00001010000100000100100001101010", // CALL 3R R2 LE R1 10
                 "00000000000000000000000000000000" // HALT
         });
         processor.run();
 
-        // PC will be 4 (total instructions) as it never gets set by branch.
-        Assert.assertEquals(4, processor.getPC().getUnsigned());
+        // PC will be 5 (total instructions) as it never gets set by branch.
+        Assert.assertEquals(5, processor.getPC().getUnsigned());
     }
 
     // Push 0R is unused, nothing to test.
@@ -400,7 +403,13 @@ public class UnitTest5
 
     // TODO: Test Peek and Pop
     @Test
-    public void testPeekAndPop()
+    public void testPeek()
+    {
+
+    }
+
+    @Test
+    public void testPop()
     {
 
     }
