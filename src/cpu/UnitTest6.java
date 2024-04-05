@@ -219,7 +219,6 @@ public class UnitTest6
         LinkedList<Token> Tokens = lex.Lex();
         Parser pars = new Parser(Tokens);
         LinkedList<String> codes = pars.ParseOperation();
-        System.out.println(codes);
 
         // instruction for peek R1 R2 R3.
         Assert.assertEquals("00000000000100001100000000111010", codes.get(0));
