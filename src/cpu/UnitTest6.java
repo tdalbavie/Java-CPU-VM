@@ -6,6 +6,11 @@ import java.util.LinkedList;
 
 public class UnitTest6
 {
+    /*
+    * Be sure before testing that the project is in package cpu,
+    * parser uses static import of Token.TokenType.* for code simplification.
+    */
+
     // Covers all important aspects of the lexer to ensure working order.
     @Test
     public void lexerTest()
