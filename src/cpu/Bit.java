@@ -1,3 +1,5 @@
+package cpu;
+
 public class Bit
 {
     // Holds the value of the bit.

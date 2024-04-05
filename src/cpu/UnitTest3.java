@@ -1,3 +1,5 @@
+package cpu;
+
 import org.junit.*;
 
 public class UnitTest3
@@ -16,7 +18,7 @@ public class UnitTest3
     @Test
     public void testRead()
     {
-        // Creating a Word object for the address and setting its value
+        // Creating a cpu.Word object for the address and setting its value
         Word address = new Word();
         // Sets address to the first word that was loaded in.
         address.set(0);
@@ -40,7 +42,7 @@ public class UnitTest3
     @Test
     public void testWrite()
     {
-        // Creating Word objects for address and value
+        // Creating cpu.Word objects for address and value
         Word address = new Word();
         Word value = new Word();
         // Writes to index 2 in memory.

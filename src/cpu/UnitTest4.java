@@ -1,3 +1,5 @@
+package cpu;
+
 import org.junit.*;
 
 public class UnitTest4

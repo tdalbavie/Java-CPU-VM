@@ -1,3 +1,5 @@
+package cpu;
+
 public class MainMemory
 {
     private static final Word[] memory = new Word[1024];
@@ -32,7 +34,7 @@ public class MainMemory
         initializeMemory();
         // Converts address to an integer.
         int addr = (int)address.getUnsigned();
-        // Copies the value to the memory location (without replacing the Word object).
+        // Copies the value to the memory location (without replacing the cpu.Word object).
         memory[addr].copy(value);
     }
 

@@ -1,3 +1,5 @@
+package cpu;
+
 public class Word
 {
     // Holds a set of 32 bits.
@@ -19,7 +21,7 @@ public class Word
         System.arraycopy(wordToRead.getBitArray(), 0, BitArray, 0, BitArray.length);
     }
 
-    // Get a new Bit that has the same value as bit i.
+    // Get a new cpu.Bit that has the same value as bit i.
     public Bit getBit(int i)
     {
         if (BitArray[i].getValue() == true)
@@ -35,55 +37,55 @@ public class Word
         BitArray[i].set(val);
     }
 
-    // and two words, returning a new Word.
+    // and two words, returning a new cpu.Word.
     public Word and(Word other)
     {
         Word newWord = new Word();
 
         for(int i = 0; i < BitArray.length; i++)
         {
-            // Uses Bit and operation and inserts result into newWord for each bit in the words.
+            // Uses cpu.Bit and operation and inserts result into newWord for each bit in the words.
             Bit newBit = BitArray[i].and(other.getBit(i));
             newWord.setBit(i, newBit);
         }
 
-        // Returns newly created Word after processing.
+        // Returns newly created cpu.Word after processing.
         return newWord;
     }
 
-    // or two words, returning a new Word.
+    // or two words, returning a new cpu.Word.
     public Word or(Word other)
     {
         Word newWord = new Word();
 
         for(int i = 0; i < BitArray.length; i++)
         {
-            // Uses Bit and operation and inserts result into newWord for each bit in the words.
+            // Uses cpu.Bit and operation and inserts result into newWord for each bit in the words.
             Bit newBit = BitArray[i].or(other.getBit(i));
             newWord.setBit(i, newBit);
         }
 
-        // Returns newly created Word after processing.
+        // Returns newly created cpu.Word after processing.
         return newWord;
     }
 
-    // xor two words, returning new Word.
+    // xor two words, returning new cpu.Word.
     public Word xor(Word other)
     {
         Word newWord = new Word();
 
         for(int i = 0; i < BitArray.length; i++)
         {
-            // Uses Bit and operation and inserts result into newWord for each bit in the words.
+            // Uses cpu.Bit and operation and inserts result into newWord for each bit in the words.
             Bit newBit = BitArray[i].xor(other.getBit(i));
             newWord.setBit(i, newBit);
         }
 
-        // Returns newly created Word after processing.
+        // Returns newly created cpu.Word after processing.
         return newWord;
     }
 
-    // negate this word, creating a new Word.
+    // negate this word, creating a new cpu.Word.
     public Word not()
     {
         Word newWord = new Word();
@@ -94,11 +96,11 @@ public class Word
             newWord.setBit(i, newBit);
         }
 
-        // Returns newly created Word after processing.
+        // Returns newly created cpu.Word after processing.
         return newWord;
     }
 
-    // Left shift this word by amount bits, creating a new Word.
+    // Left shift this word by amount bits, creating a new cpu.Word.
     public Word leftShift(int amount)
     {
         Word shiftedWord = new Word();
@@ -118,7 +120,7 @@ public class Word
         return shiftedWord;
     }
 
-    // Right shift this word by amount bits, creating a new Word.
+    // Right shift this word by amount bits, creating a new cpu.Word.
     public Word rightShift(int amount)
     {
         Word shiftedWord = new Word();
@@ -205,25 +207,25 @@ public class Word
         return value;
     }
 
-    // Copies the values of the bits from another Word into this one.
+    // Copies the values of the bits from another cpu.Word into this one.
     public void copy(Word other)
     {
         for (int i = 0; i < BitArray.length; i++)
         {
             Bit newBit;
 
-            // Checks the bit value of other Word.
+            // Checks the bit value of other cpu.Word.
             if (other.getBit(i).getValue() == true)
                 newBit = new Bit(true);
             else
                 newBit = new Bit(false);
 
-            // Inserts the bit value at same position in this Word.
+            // Inserts the bit value at same position in this cpu.Word.
             BitArray[i] = newBit;
         }
     }
 
-    // Set the value of the bits of this Word (used for tests)
+    // Set the value of the bits of this cpu.Word (used for tests)
     public void set(int value)
     {
         // Checks for a negative value.

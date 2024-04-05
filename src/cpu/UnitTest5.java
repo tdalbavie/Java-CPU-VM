@@ -1,3 +1,5 @@
+package cpu;
+
 import org.junit.*;
 
 public class UnitTest5
@@ -174,7 +176,7 @@ public class UnitTest5
         Assert.assertEquals(4, processor.getPC().getUnsigned());
     }
 
-    // Same as Branch, just checks if PC was stored in MainMemory.
+    // Same as Branch, just checks if PC was stored in cpu.MainMemory.
     @Test
     public void testCall0R()
     {
@@ -191,7 +193,7 @@ public class UnitTest5
         Assert.assertEquals(1, MainMemory.read(processor.getSP()).getUnsigned());
     }
 
-    // Same as Branch, just checks if PC was stored in MainMemory.
+    // Same as Branch, just checks if PC was stored in cpu.MainMemory.
     @Test
     public void testCall1R()
     {
@@ -209,7 +211,7 @@ public class UnitTest5
         Assert.assertEquals(2, MainMemory.read(processor.getSP()).getUnsigned());
     }
 
-    // Same as Branch, just checks if PC was stored in MainMemory.
+    // Same as Branch, just checks if PC was stored in cpu.MainMemory.
     @Test
     public void testCall2R()
     {
@@ -228,7 +230,7 @@ public class UnitTest5
         // Value of old PC is 3, PC gets incremented before it gets stored.
         Assert.assertEquals(3, MainMemory.read(processor.getSP()).getUnsigned());
 
-        // Tests false case (No change to PC so no need to check MainMemory as PC never gets stored).
+        // Tests false case (No change to PC so no need to check cpu.MainMemory as PC never gets stored).
         processor = new Processor();
         MainMemory.load(new String[] {
                 "00000000000000011000000000100001", // MATH DestOnly 6 R1
@@ -242,7 +244,7 @@ public class UnitTest5
         Assert.assertEquals(4, processor.getPC().getUnsigned());
     }
 
-    // Same as Branch, just checks if PC was stored in MainMemory.
+    // Same as Branch, just checks if PC was stored in cpu.MainMemory.
     @Test
     public void testCall3R()
     {
@@ -262,7 +264,7 @@ public class UnitTest5
         // Value of old PC is 3, PC gets incremented before it gets stored.
         Assert.assertEquals(4, MainMemory.read(processor.getSP()).getUnsigned());
 
-        // Tests false case (No change to PC so no need to check MainMemory as PC never gets stored).
+        // Tests false case (No change to PC so no need to check cpu.MainMemory as PC never gets stored).
         processor = new Processor();
         MainMemory.load(new String[] {
                 "00000000000000011000000000100001", // MATH DestOnly 6 R1
@@ -289,7 +291,7 @@ public class UnitTest5
         });
         processor.run();
 
-        // Adds 8 and 3 then stores it in MainMemory.
+        // Adds 8 and 3 then stores it in cpu.MainMemory.
         Assert.assertEquals(11, MainMemory.read(processor.getSP()).getUnsigned());
     }
 
@@ -306,7 +308,7 @@ public class UnitTest5
         });
         processor.run();
 
-        // Multiplies 6 and 7 then stores it in MainMemory.
+        // Multiplies 6 and 7 then stores it in cpu.MainMemory.
         Assert.assertEquals(42, MainMemory.read(processor.getSP()).getUnsigned());
     }
 
@@ -323,7 +325,7 @@ public class UnitTest5
         });
         processor.run();
 
-        // Subtracts 10 from 5 then stores it in MainMemory.
+        // Subtracts 10 from 5 then stores it in cpu.MainMemory.
         Assert.assertEquals(-5, MainMemory.read(processor.getSP()).getSigned());
     }
 
@@ -343,7 +345,6 @@ public class UnitTest5
         Assert.assertEquals(4, processor.getPC().getUnsigned());
     }
 
-    // TODO: Add Load to StoreAndLoad tests
     @Test
     public void testStoreAndLoad1R()
     {
@@ -351,6 +352,7 @@ public class UnitTest5
         MainMemory.load(new String[] {
                 "00000000000000100100000000100001", // MATH DestOnly 9 R1
                 "00000000000000011100000000110101", // STORE 1R 7
+                "00000000000000000000000000110001", // LOAD 1R R1 ADD 0
                 "00000000000000000000000000000000" // HALT
         });
         processor.run();
@@ -358,8 +360,16 @@ public class UnitTest5
         Word address = new Word();
         address.set(9);
 
-        // Subtracts 10 from 5 then stores it in MainMemory.
+        // Subtracts 10 from 5 then stores it in cpu.MainMemory.
         Assert.assertEquals(7, MainMemory.read(address).getSigned());
+
+        // Gets the value for R1 in the processor.
+        Word R1 = processor.getRegisterValue(1);
+
+        long R1Value = R1.getUnsigned();
+
+        // Checks the value after load replaced R1 with stored value.
+        Assert.assertEquals(7, R1Value);
     }
 
     @Test
@@ -370,6 +380,7 @@ public class UnitTest5
                 "00000000000000010100000000100001", // MATH DestOnly 5 R1
                 "00000000000000001100000001000001", // MATH DestOnly 3 R2
                 "00000000001100001000000000110111", // STORE 2R R1 ADD 6 R2
+                "00000000001100000100000000110011", // LOAD 2R R1 ADD 6 R1
                 "00000000000000000000000000000000" // HALT
         });
         processor.run();
@@ -377,8 +388,16 @@ public class UnitTest5
         Word address = new Word();
         address.set(11);
 
-        // Stores R2 into MainMemory at index R1 + 6.
+        // Stores R2 into cpu.MainMemory at index R1 + 6.
         Assert.assertEquals(3, MainMemory.read(address).getSigned());
+
+        // Gets the value for R1 in the processor.
+        Word R1 = processor.getRegisterValue(1);
+
+        long R1Value = R1.getUnsigned();
+
+        // Checks the value after load replaced R1 with stored value.
+        Assert.assertEquals(3, R1Value);
     }
 
     @Test
@@ -390,6 +409,7 @@ public class UnitTest5
                 "00000000000000001100000001000001", // MATH DestOnly 3 R2
                 "00000000000000001000000001100001", // MATH DestOnly 2 R3
                 "00000000000100001100000000110110", // STORE 3R R1 ADD R2 R3
+                "00000000000010001000000000110010", // LOAD 2R R1 ADD R2 R1
                 "00000000000000000000000000000000" // HALT
         });
         processor.run();
@@ -397,20 +417,82 @@ public class UnitTest5
         Word address = new Word();
         address.set(7);
 
-        // Stores R2 into MainMemory at index R1 + 6.
+        // Stores R2 into cpu.MainMemory at index R1 + 6.
         Assert.assertEquals(2, MainMemory.read(address).getSigned());
+
+        // Gets the value for R1 in the processor.
+        Word R1 = processor.getRegisterValue(1);
+
+        long R1Value = R1.getUnsigned();
+
+        // Checks the value after load replaced R1 with stored value.
+        Assert.assertEquals(2, R1Value);
     }
 
     // TODO: Test Peek and Pop
     @Test
-    public void testPeek()
+    public void testPeek2R()
     {
+        Processor processor = new Processor();
+        MainMemory.load(new String[] {
+                "00000000111111110000000000100001", // MATH DestOnly 1020 R1
+                "00000000000000001000000001000001", // MATH DestOnly 2 R2
+                "00000000000000110000000000110101", // STORE 1R 12
+                "00000000000010001000000000111011", // PEEK 2R R1 ADD 1
+                "00000000000000000000000000000000" // HALT
+        });
+        processor.run();
 
+        // Gets the value for R1 in the processor.
+        Word R1 = processor.getRegisterValue(1);
+
+        long R1Value = R1.getUnsigned();
+
+        // Checks the value after load replaced R1 with stored value.
+        Assert.assertEquals(12, R1Value);
     }
 
     @Test
-    public void testPop()
+    public void testPeek3R()
     {
+        Processor processor = new Processor();
+        MainMemory.load(new String[] {
+                "00000000111111101000000000100001", // MATH DestOnly 1018 R1
+                "00000000000000001100000001000001", // MATH DestOnly 3 R2
+                "00000000000000001000000001100001", // MATH DestOnly 2 R3
+                "00000000000000110100000000110101", // STORE 1R 13
+                "00000000000100001100000000111010", // PEEK 3R R2 ADD R3
+                "00000000000000000000000000000000" // HALT
+        });
+        processor.run();
 
+        // Gets the value for R1 in the processor.
+        Word R1 = processor.getRegisterValue(1);
+
+        long R1Value = R1.getUnsigned();
+
+        // Checks the value after load replaced R1 with stored value.
+        Assert.assertEquals(13, R1Value);
+    }
+
+    @Test
+    public void testPop1R()
+    {
+        Processor processor = new Processor();
+        MainMemory.load(new String[] {
+                "00000000000001101100000000100001", // MATH DestOnly 27 R1
+                "00000000000000001111100000101101", // PUSH 1R R1 ADD 3
+                "00000000000000000000000000111001", // POP
+                "00000000000000000000000000000000" // HALT
+        });
+        processor.run();
+
+        // Gets the value for R1 in the processor.
+        Word R1 = processor.getRegisterValue(1);
+
+        long R1Value = R1.getUnsigned();
+
+        // Checks the value after load replaced R1 with stored value.
+        Assert.assertEquals(30, R1Value);
     }
 }

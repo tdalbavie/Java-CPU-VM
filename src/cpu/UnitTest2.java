@@ -1,7 +1,9 @@
+package cpu;
+
 import org.junit.*;
 public class UnitTest2
 {
-    // Private ALU initialized for all unit tests to use for ease of use.
+    // Private cpu.ALU initialized for all unit tests to use for ease of use.
     private ALU alu;
 
     @Before

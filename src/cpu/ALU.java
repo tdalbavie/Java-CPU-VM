@@ -1,3 +1,5 @@
+package cpu;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,7 @@ public class ALU
     Word op2;
     Word result;
 
-    // Constructor for ALU.
+    // Constructor for cpu.ALU.
     public ALU()
     {
         this.op1 = new Word();
@@ -149,7 +151,7 @@ public class ALU
     // Adds using add2.
     private Word add(Word a, Word b)
     {
-        // Directly use add2 for adding two Word objects
+        // Directly use add2 for adding two cpu.Word objects
         return add2(a, b);
     }
 

@@ -1,7 +1,9 @@
+package cpu;
+
 import org.junit.*;
 public class UnitTest1
 {
-    // Tests the set, clear, toggle, and getValue methods in the Bit class
+    // Tests the set, clear, toggle, and getValue methods in the cpu.Bit class
     @Test
     public void bitAccessorMutatorTest()
     {
@@ -26,7 +28,7 @@ public class UnitTest1
         Assert.assertFalse(testBit.getValue());
     }
 
-    // Tests getBit and setBit methods in Word class.
+    // Tests getBit and setBit methods in cpu.Word class.
     @Test
     public void wordAccessorMutatorTest()
     {
@@ -43,7 +45,7 @@ public class UnitTest1
         Assert.assertFalse(testWord.getBit(5).getValue());
     }
 
-    // Tests toString and set in Word (Bit toString is tested through Word toString).
+    // Tests toString and set in cpu.Word (cpu.Bit toString is tested through cpu.Word toString).
     @Test
     public void ToStringTest()
     {
@@ -62,7 +64,7 @@ public class UnitTest1
                 "t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,f,t,t,f,f,t,f,t,t,t,f");
     }
 
-    // Tests and operation in Word (Bit operation is being tested through Word)
+    // Tests and operation in cpu.Word (cpu.Bit operation is being tested through cpu.Word)
     @Test
     public void andTest()
     {
@@ -79,7 +81,7 @@ public class UnitTest1
                 "f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f");
     }
 
-    // Tests or operation in Word (Bit operation is being tested through Word)
+    // Tests or operation in cpu.Word (cpu.Bit operation is being tested through cpu.Word)
     @Test
     public void orTest()
     {
@@ -96,7 +98,7 @@ public class UnitTest1
                 "f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,t,t");
     }
 
-    // Tests xor operation in Word (Bit operation is being tested through Word)
+    // Tests xor operation in cpu.Word (cpu.Bit operation is being tested through cpu.Word)
     @Test
     public void xorTest()
     {
@@ -113,7 +115,7 @@ public class UnitTest1
                 "f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,t");
     }
 
-    // Tests not operation in Word (Bit operation is being tested through Word)
+    // Tests not operation in cpu.Word (cpu.Bit operation is being tested through cpu.Word)
     @Test
     public void notTest()
     {
