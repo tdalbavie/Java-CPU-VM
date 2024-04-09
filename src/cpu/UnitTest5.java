@@ -2,6 +2,8 @@ package cpu;
 
 import org.junit.*;
 
+import java.util.LinkedList;
+
 public class UnitTest5
 {
     // Pre-generated comparison codes for BOP.
@@ -375,14 +377,26 @@ public class UnitTest5
     @Test
     public void testStoreAndLoad2R()
     {
+        String str = "math R1 5 \n" +
+                "math R2 3 \n" +
+                "store R1 R2 6\n" +
+                "load R1 R1 6\n" +
+                "halt \n";
+        Lexer lex = new Lexer(str);
+        LinkedList<Token> Tokens = lex.Lex();
+        Parser pars = new Parser(Tokens);
+        LinkedList<String> codes = pars.ParseOperation();
         Processor processor = new Processor();
-        MainMemory.load(new String[] {
-                "00000000000000010100000000100001", // MATH DestOnly 5 R1
-                "00000000000000001100000001000001", // MATH DestOnly 3 R2
-                "00000000001100001000000000110111", // STORE 2R R1 ADD 6 R2
-                "00000000001100000100000000110011", // LOAD 2R R1 ADD 6 R1
-                "00000000000000000000000000000000" // HALT
-        });
+
+//        MainMemory.load(new String[] {
+//                "00000000000000010100000000100001", // MATH DestOnly 5 R1
+//                "00000000000000001100000001000001", // MATH DestOnly 3 R2
+//                "00000000001100001000000000110111", // STORE 2R R1 ADD 6 R2
+//                "00000000001100000100000000110011", // LOAD 2R R1 ADD 6 R1
+//                "00000000000000000000000000000000" // HALT
+//        });
+        // Tests the parser generated codes.
+        MainMemory.load(codes.toArray(new String[0]));
         processor.run();
 
         Word address = new Word();
@@ -429,7 +443,7 @@ public class UnitTest5
         Assert.assertEquals(2, R1Value);
     }
 
-    // TODO: Test Peek and Pop
+    // Test no longer works due to change of SP-(rs1 + rs2) to SP+(rs1 + rs2).
     @Test
     public void testPeek2R()
     {
@@ -452,6 +466,7 @@ public class UnitTest5
         Assert.assertEquals(12, R1Value);
     }
 
+    // Test no longer works due to change of SP-(rs1 + rs2) to SP+(rs1 + rs2).
     @Test
     public void testPeek3R()
     {

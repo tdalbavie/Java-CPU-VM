@@ -162,9 +162,9 @@ public class UnitTest6
     @Test
     public void ParserLoadTest()
     {
-        // Tests 3R instruction (R1 is a throw away to get 3R).
+        // Tests 3R instruction.
         String str = "load R1 R2 R3 \n" +
-                // Tests 2R instruction (R1 is a throw away to get 2R).
+                // Tests 2R instruction.
                 "load R1 R10 20 \n" +
                 // Tests 1R instruction.
                 "load R5 15 \n" +
